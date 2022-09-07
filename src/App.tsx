@@ -1,12 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { BrowserRouter } from "react-router-dom";
+import { ThemeProvider } from "styled-components";
 
-function App() {
+import { Router } from "./Router";
+
+import { defaultTheme } from "./styles/themes/default";
+import { GlobalStyle } from "./styles/global";
+
+export default function App() {
   return (
-    <div>
-      <h1>Hello World!</h1>
-    </div>
-  )
+    <ThemeProvider theme={defaultTheme}>
+      <BrowserRouter>
+        <Router />
+      </BrowserRouter>
+      <GlobalStyle />
+    </ThemeProvider>
+  );
 }
-
-export default App
