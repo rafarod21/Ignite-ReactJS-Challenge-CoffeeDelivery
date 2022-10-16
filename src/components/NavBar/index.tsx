@@ -4,6 +4,8 @@ import { MapPin, ShoppingCart, X } from 'phosphor-react';
 
 import { CoffeeOrderContext } from '../../contexts/CoffeeOrderContext';
 
+import { bigData } from '../../services/apiBigData';
+
 import logoImg from '../../assets/logo.svg';
 
 import {
@@ -14,21 +16,33 @@ import {
 } from './styles';
 
 export function NavBar() {
-  const { coffees } = useContext(CoffeeOrderContext);
+  const { coffees, address, changeAddress } = useContext(CoffeeOrderContext);
   const [amountItemsInShoppingCart, setAmountItemsInShoppingCart] = useState(0);
-  const [currentCity, setCurrentCity] = useState('Maringá, PR');
+  const [currentCity, setCurrentCity] = useState('');
 
-  function showPosition(position: any) {
-    console.log(
-      `Latitude: " ${position.coords.latitude} | Longitude: " + ${position.coords.longitude}`
+  async function showPosition(position: any) {
+    // console.log(
+    //   `Latitude: " ${position.coords.latitude} | Longitude: " + ${position.coords.longitude}`
+    // );
+
+    const { data } = await bigData.get('reverse-geocode-client', {
+      params: {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        localityLanguage: 'pt',
+      },
+    });
+    // console.log(data);
+
+    setCurrentCity(
+      `${data.city} - ${data.principalSubdivisionCode.substring(3)}`
     );
   }
 
   function getLatLong() {
+    if (currentCity !== '') return;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(showPosition);
-    } else {
-      console.log('Geolocation is not supported by this browser.');
     }
   }
 

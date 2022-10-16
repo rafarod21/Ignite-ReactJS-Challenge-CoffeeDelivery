@@ -123,31 +123,42 @@ export function Checkout() {
         <div>
           <h2>Cafés selecionados</h2>
           <SelctedCoffees>
-            <ListCoffees>
-              {coffees.map((coffee) => (
-                <>
-                  <CoffeeCardCheckout key={coffee.name} coffee={coffee} />
-                  <hr />
-                </>
-              ))}
-            </ListCoffees>
-            <SectionValues>
-              <div>
-                <span>Total de itens</span>
-                <span>{formatValueInCurrentCoin(totalMoney)}</span>
-              </div>
-              <div>
-                <span>{'Entrega (fixa)'}</span>
-                <span>{formatValueInCurrentCoin(DELIVERY_FEE)}</span>
-              </div>
-              <div>
-                <strong>Total</strong>
-                <strong>
-                  {formatValueInCurrentCoin(totalMoney + DELIVERY_FEE)}
-                </strong>
-              </div>
-            </SectionValues>
-            <button type='submit'>CONFIRMAR PEDIDO</button>
+            {coffees.length <= 0 ? (
+              <span>
+                {'Você ainda não escolheu nenhum café :('}
+                <br />
+                <br />
+                {'Volte para a página inicial e escolha alguns =D'}{' '}
+              </span>
+            ) : (
+              <>
+                <ListCoffees>
+                  {coffees.map((coffee) => (
+                    <>
+                      <CoffeeCardCheckout key={coffee.name} coffee={coffee} />
+                      <hr />
+                    </>
+                  ))}
+                </ListCoffees>
+                <SectionValues>
+                  <div>
+                    <span>Total de itens</span>
+                    <span>{formatValueInCurrentCoin(totalMoney)}</span>
+                  </div>
+                  <div>
+                    <span>{'Entrega (fixa)'}</span>
+                    <span>{formatValueInCurrentCoin(DELIVERY_FEE)}</span>
+                  </div>
+                  <div>
+                    <strong>Total</strong>
+                    <strong>
+                      {formatValueInCurrentCoin(totalMoney + DELIVERY_FEE)}
+                    </strong>
+                  </div>
+                </SectionValues>
+                <button type='submit'>CONFIRMAR PEDIDO</button>
+              </>
+            )}
           </SelctedCoffees>
         </div>
       </form>
