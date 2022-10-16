@@ -6,6 +6,8 @@ import { CoffeeOrderContext } from '../../contexts/CoffeeOrderContext';
 
 import { CoffeeType } from '../../@types/Coffee';
 
+import { formatValueInCurrentCoinWithoutSymbol } from '../../utils/formatValueInCurrentCoin';
+
 import {
   CoffeeCardContainer,
   TagsContainer,
@@ -50,7 +52,8 @@ export function CoffeeCard({ coffee }: CoffeeCardProps) {
       <span>{coffee.description}</span>
       <CardFooter>
         <span>
-          R$ <strong>{coffee.value}</strong>
+          R${' '}
+          <strong>{formatValueInCurrentCoinWithoutSymbol(coffee.value)}</strong>
         </span>
         <div>
           <CoffeesAmountInput

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const CoffeeCardCheckoutContainer = styled.div`
   display: flex;
@@ -32,7 +32,7 @@ export const CoffeeCardCheckoutContainer = styled.div`
         border: 1px solid ${(props) => props.theme.card};
         background: ${(props) => props.theme.button};
         border-radius: 6px;
-        padding: 0 0.5rem;
+        padding: 0.5rem;
         gap: 0.25rem;
 
         font-size: 0.75rem;
@@ -50,7 +50,7 @@ export const CoffeeCardCheckoutContainer = styled.div`
 
         svg {
           font-size: 1rem;
-          color: ${(props) => props.theme["purple-500"]};
+          color: ${(props) => props.theme['purple-500']};
         }
       }
     }

@@ -1,5 +1,5 @@
-import { NavLink } from "react-router-dom";
-import styled from "styled-components";
+import { NavLink } from 'react-router-dom';
+import styled from 'styled-components';
 
 export const NavBarContainer = styled.nav`
   width: 100%;
@@ -13,6 +13,10 @@ export const NavBarContainer = styled.nav`
     align-items: center;
     justify-content: center;
     gap: 0.75rem;
+  }
+
+  @media (max-width: 850px) {
+    padding: 2rem;
   }
 `;
 
@@ -34,26 +38,26 @@ const CurrentCity = styled.button`
 `;
 
 export const CurrentCityFound = styled(CurrentCity)`
-  background: ${(props) => props.theme["purple-700"]};
-  color: ${(props) => props.theme["purple-300"]};
+  background: ${(props) => props.theme['purple-700']};
+  color: ${(props) => props.theme['purple-300']};
 
   svg {
-    color: ${(props) => props.theme["purple-500"]};
+    color: ${(props) => props.theme['purple-500']};
   }
 `;
 
 export const CurrentCityNotFound = styled(CurrentCity)`
-  background: ${(props) => props.theme["red-700"]};
-  color: ${(props) => props.theme["red-300"]};
+  background: ${(props) => props.theme['red-700']};
+  color: ${(props) => props.theme['red-300']};
 
   svg {
-    color: ${(props) => props.theme["red-500"]};
+    color: ${(props) => props.theme['red-500']};
   }
 `;
 
 export const ShoppingCartButtonNavBar = styled(NavLink)`
-  background: ${(props) => props.theme["yellow-700"]};
-  color: ${(props) => props.theme["yellow-300"]};
+  background: ${(props) => props.theme['yellow-700']};
+  color: ${(props) => props.theme['yellow-300']};
   border: 0;
   border-radius: 6px;
   padding: 0.5rem;
@@ -67,7 +71,7 @@ export const ShoppingCartButtonNavBar = styled(NavLink)`
   transition: background 0.2s;
 
   &:hover {
-    background: ${(props) => props.theme["yellow-500"]};
+    background: ${(props) => props.theme['yellow-500']};
   }
 
   span {
@@ -78,7 +82,7 @@ export const ShoppingCartButtonNavBar = styled(NavLink)`
     min-width: 1.25rem;
     min-height: 1.25rem;
 
-    background: ${(props) => props.theme["yellow-300"]};
+    background: ${(props) => props.theme['yellow-300']};
     border-radius: 50%;
 
     color: ${(props) => props.theme.white};

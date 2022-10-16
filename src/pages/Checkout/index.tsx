@@ -4,11 +4,18 @@ import {
   CurrencyDollar,
   MapPinLine,
   Money,
-  QrCode
-} from "phosphor-react";
+  QrCode,
+} from 'phosphor-react';
+import { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { NavBar } from "../../components/NavBar";
-import { CoffeeCardCheckout } from "../../components/CoffeeCardCheckout";
+import { CoffeeOrderContext } from '../../contexts/CoffeeOrderContext';
+
+import { CoffeeCardCheckout } from '../../components/CoffeeCardCheckout';
+
+import { Payments } from '../../@types/Payments';
+
+import { formatValueInCurrentCoin } from '../../utils/formatValueInCurrentCoin';
 
 import {
   Address,
@@ -20,33 +27,35 @@ import {
   OptionsPayments,
   Payment,
   SectionValues,
-  SelctedCoffees
-} from "./styles";
+  SelctedCoffees,
+} from './styles';
 
-type Tags = "tradicional" | "especial" | "com leite" | "alcoólico" | "gelado";
-
-// type OptionsPayments = "credit" | "debit" | "money" | "pix";
-
-interface Coffee {
-  name: string;
-  description: string;
-  tags: Tags[];
-  value: string;
-  image: string;
-}
-
-const TAGS: Tags[] = [
-  "tradicional",
-  "especial",
-  "com leite",
-  "alcoólico",
-  "gelado"
-];
+const DELIVERY_FEE = 3.5;
 
 export function Checkout() {
+  const navigate = useNavigate();
+  const {
+    coffees,
+    totalMoney,
+    address,
+    changeAddress,
+    payment,
+    changePayment,
+  } = useContext(CoffeeOrderContext);
+  const [paymentSelected, setPaymentSelected] = useState<Payments>(payment);
+
+  function handleChangePayment(payment: Payments) {
+    setPaymentSelected(payment);
+    changePayment(payment);
+  }
+
+  function handleSubmitForm(event: any) {
+    navigate('/success');
+  }
+
   return (
     <CheckoutContainer>
-      <form>
+      <form onSubmit={handleSubmitForm}>
         <div>
           <h2>Complete seu pedido</h2>
           <Address>
@@ -57,15 +66,15 @@ export function Checkout() {
                 <span>Informe o endereço onde deseja receber seu pedido</span>
               </div>
             </LabelAddress>
-            <input type="text" placeholder="CEP" />
-            <input type="text" placeholder="Rua" />
-            <input type="text" placeholder="Número" />
-            <div data-after="Opicional">
-              <input type="text" placeholder="Complemento" />
+            <input type='text' placeholder='CEP' />
+            <input type='text' placeholder='Rua' />
+            <input type='text' placeholder='Número' />
+            <div data-after='Opicional'>
+              <input type='text' placeholder='Complemento' />
             </div>
-            <input type="text" placeholder="Bairro" />
-            <input type="text" placeholder="Cidade" />
-            <input type="text" placeholder="UF" />
+            <input type='text' placeholder='Bairro' />
+            <input type='text' placeholder='Cidade' />
+            <input type='text' placeholder='UF' />
           </Address>
           <Payment>
             <LabelPayment>
@@ -80,16 +89,32 @@ export function Checkout() {
             </LabelPayment>
 
             <OptionsPayments>
-              <ButtonOptionsPayments isSelected>
+              <ButtonOptionsPayments
+                type='button'
+                isSelected={paymentSelected === 'credit'}
+                onClick={() => handleChangePayment('credit')}
+              >
                 <CreditCard /> CARTÃO DE CRÉDITO
               </ButtonOptionsPayments>
-              <ButtonOptionsPayments>
+              <ButtonOptionsPayments
+                type='button'
+                isSelected={paymentSelected === 'debit'}
+                onClick={() => handleChangePayment('debit')}
+              >
                 <Bank /> CARTÃO DE DÉBITO
               </ButtonOptionsPayments>
-              <ButtonOptionsPayments>
+              <ButtonOptionsPayments
+                type='button'
+                isSelected={paymentSelected === 'money'}
+                onClick={() => handleChangePayment('money')}
+              >
                 <Money /> DINHEIRO
               </ButtonOptionsPayments>
-              <ButtonOptionsPayments>
+              <ButtonOptionsPayments
+                type='button'
+                isSelected={paymentSelected === 'pix'}
+                onClick={() => handleChangePayment('pix')}
+              >
                 <QrCode /> PIX
               </ButtonOptionsPayments>
             </OptionsPayments>
@@ -99,26 +124,30 @@ export function Checkout() {
           <h2>Cafés selecionados</h2>
           <SelctedCoffees>
             <ListCoffees>
-              <CoffeeCardCheckout />
-              <hr />
-              <CoffeeCardCheckout />
-              <hr />
+              {coffees.map((coffee) => (
+                <>
+                  <CoffeeCardCheckout key={coffee.name} coffee={coffee} />
+                  <hr />
+                </>
+              ))}
             </ListCoffees>
             <SectionValues>
               <div>
                 <span>Total de itens</span>
-                <span>R$ 29,70</span>
+                <span>{formatValueInCurrentCoin(totalMoney)}</span>
               </div>
               <div>
-                <span>Entrega</span>
-                <span>R$ 3,50</span>
+                <span>{'Entrega (fixa)'}</span>
+                <span>{formatValueInCurrentCoin(DELIVERY_FEE)}</span>
               </div>
               <div>
                 <strong>Total</strong>
-                <strong>R$ 33,20</strong>
+                <strong>
+                  {formatValueInCurrentCoin(totalMoney + DELIVERY_FEE)}
+                </strong>
               </div>
             </SectionValues>
-            <button type="submit">CONFIRMAR PEDIDO</button>
+            <button type='submit'>CONFIRMAR PEDIDO</button>
           </SelctedCoffees>
         </div>
       </form>

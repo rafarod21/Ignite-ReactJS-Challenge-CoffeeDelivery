@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { MapPin, ShoppingCart, X } from 'phosphor-react';
 
 import { CoffeeOrderContext } from '../../contexts/CoffeeOrderContext';
@@ -11,7 +12,6 @@ import {
   CurrentCityFound,
   CurrentCityNotFound,
 } from './styles';
-import { NavLink } from 'react-router-dom';
 
 export function NavBar() {
   const { coffees } = useContext(CoffeeOrderContext);

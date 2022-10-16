@@ -18,6 +18,12 @@ export const CheckoutContainer = styled.div`
       line-height: 130%;
       margin-bottom: 1rem;
     }
+
+    @media (max-width: 1200px) {
+      padding: 0 2rem 2rem;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
   }
 `;
 
@@ -56,6 +62,31 @@ export const Address = styled.section`
     'district city uf';
   row-gap: 1rem;
   column-gap: 0.75rem;
+
+  @media (max-width: 800px) {
+    height: auto;
+    grid-template-columns: auto auto;
+    grid-template-areas:
+      'label label'
+      'cep .'
+      'street street'
+      'number complement'
+      'district district'
+      'city uf';
+  }
+
+  @media (max-width: 800px) {
+    grid-template-columns: auto;
+    grid-template-areas:
+      'label'
+      'cep'
+      'street'
+      'number'
+      'complement'
+      'district'
+      'city'
+      'uf';
+  }
 
   input {
     padding: 0.75rem;
@@ -149,6 +180,10 @@ export const OptionsPayments = styled.div`
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 0.75rem;
   margin-top: 2rem;
+
+  @media (max-width: 800px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const ButtonOptionsPayments = styled.button<{ isSelected?: boolean }>`

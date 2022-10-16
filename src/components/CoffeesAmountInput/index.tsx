@@ -3,8 +3,6 @@ import { Minus, Plus } from 'phosphor-react';
 
 import { CoffeesAmountInputContainer } from './styles';
 
-const MAX_COFFEES = 50;
-
 interface CoffeesAmountInputProps {
   amount: number;
   incrementAmountCoffees: () => void;
@@ -18,11 +16,11 @@ export function CoffeesAmountInput({
 }: CoffeesAmountInputProps) {
   return (
     <CoffeesAmountInputContainer>
-      <button onClick={decrementAmountCoffees}>
+      <button onClick={decrementAmountCoffees} type='button'>
         <Minus />
       </button>
       <span>{amount}</span>
-      <button onClick={incrementAmountCoffees}>
+      <button onClick={incrementAmountCoffees} type='button'>
         <Plus />
       </button>
     </CoffeesAmountInputContainer>
