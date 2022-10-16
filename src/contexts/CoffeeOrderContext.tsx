@@ -24,6 +24,11 @@ interface CoffeeOrderContextType {
   address: Address;
   payment: Payments;
   changePayment: (payment: Payments) => void;
+  changeAddress: (address: Address) => void;
+  incrementOneCoffee: (coffee: CoffeeType) => void;
+  decrementOneCoffee: (coffee: CoffeeType) => void;
+  addCoffee: (coffee: CoffeeType, amount: number) => void;
+  removeCoffee: (coffee: CoffeeType) => void;
 }
 export const CoffeeOrderContext = createContext({} as CoffeeOrderContextType);
 
@@ -47,8 +52,8 @@ export function CoffeeOrderContextProvider({
     dispatch(decrementOneCoffeeAction(coffee));
   }
 
-  function addCoffee(coffee: CoffeeType) {
-    dispatch(addCoffeeAction(coffee));
+  function addCoffee(coffee: CoffeeType, amount: number) {
+    dispatch(addCoffeeAction(coffee, amount));
   }
 
   function removeCoffee(coffee: CoffeeType) {
@@ -57,6 +62,10 @@ export function CoffeeOrderContextProvider({
 
   function changePayment(payment: Payments) {
     setPayment(payment);
+  }
+
+  function changeAddress(address: Address) {
+    setAddress(address);
   }
 
   useEffect(() => {
@@ -76,6 +85,11 @@ export function CoffeeOrderContextProvider({
         address,
         payment,
         changePayment,
+        changeAddress,
+        incrementOneCoffee,
+        decrementOneCoffee,
+        addCoffee,
+        removeCoffee,
       }}
     >
       {children}

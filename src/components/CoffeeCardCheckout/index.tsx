@@ -1,8 +1,8 @@
-import { ShoppingCart, Trash } from "phosphor-react";
+import { ShoppingCart, Trash } from 'phosphor-react';
 
-import { CoffeesAmountInput } from "../CoffeesAmountInput";
+import { CoffeesAmountInput } from '../CoffeesAmountInput';
 
-import { CoffeeCardCheckoutContainer } from "./styles.ts";
+import { CoffeeCardCheckoutContainer } from './styles.ts';
 
 interface CoffeeCardCheckoutProps {
   name?: string;
@@ -13,18 +13,18 @@ interface CoffeeCardCheckoutProps {
 export function CoffeeCardCheckout({
   name,
   value,
-  image
+  image,
 }: CoffeeCardCheckoutProps) {
   return (
     <CoffeeCardCheckoutContainer>
-      <img src="CoffeesImages/expresso.png" alt="Expresso Tradicional" />
+      <img src='CoffeesImages/expresso.png' alt='Expresso Tradicional' />
       <div>
         <div>
           <span>Expresso Tradicional</span>
           <strong>R$ 9,90</strong>
         </div>
         <div>
-          <CoffeesAmountInput />
+          {/* <CoffeesAmountInput /> */}
           <button>
             <Trash /> REMOVER
           </button>

@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
-import { Coffee, Package, ShoppingCart, Timer } from "phosphor-react";
+import { useEffect, useState } from 'react';
+import { Coffee, Package, ShoppingCart, Timer } from 'phosphor-react';
 
-import { NavBar } from "../../components/NavBar";
-import { CoffeeCard } from "../../components/CoffeeCard";
+import { CoffeeCard } from '../../components/CoffeeCard';
 
-import coffeeImageImg from "../../assets/coffeeImage.png";
+import coffeeImageImg from '../../assets/coffeeImage.png';
 
 import { CoffeeType, TagsType } from '../../@types/Coffee';
 
@@ -20,18 +19,18 @@ import {
   CoffeesContainer,
   TagsWrapper,
   ButtonTag,
-  CoffeesWrapeer
-} from "./styles";
+  CoffeesWrapeer,
+} from './styles';
 
 const TAGS: TagsType[] = [
-  "tradicional",
-  "especial",
-  "com leite",
-  "alcoólico",
-  "gelado"
+  'tradicional',
+  'especial',
+  'com leite',
+  'alcoólico',
+  'gelado',
 ];
 
-import coffeesData from "../../data.json";
+import coffeesData from '../../data.json';
 
 export function Home() {
   const [activeTags, setActiveTags] = useState<string[]>([]);
@@ -78,31 +77,31 @@ export function Home() {
           <GirdItems>
             <Item1>
               <div>
-                <ShoppingCart weight="fill" />
-              </div>{" "}
+                <ShoppingCart weight='fill' />
+              </div>{' '}
               Compra simples e segura
             </Item1>
             <Item2>
               <div>
-                <Timer weight="fill" />
-              </div>{" "}
+                <Timer weight='fill' />
+              </div>{' '}
               Entrega rápida e rastreada
             </Item2>
             <Item3>
               <div>
-                <Coffee weight="fill" />
-              </div>{" "}
+                <Coffee weight='fill' />
+              </div>{' '}
               O café chega fresquinho até você
             </Item3>
             <Item4>
               <div>
-                <Package weight="fill" />
-              </div>{" "}
+                <Package weight='fill' />
+              </div>{' '}
               Embalagem mantém o café intacto
             </Item4>
           </GirdItems>
         </PresentationWrapper>
-        <img src={coffeeImageImg} alt="" />
+        <img src={coffeeImageImg} alt='' />
       </PresentationContainer>
       <CoffeesContainer>
         <header>
@@ -127,25 +126,11 @@ export function Home() {
         <CoffeesWrapeer>
           {activeTags.length > 0
             ? filterCoffees.map((coffee: CoffeeType) => (
-              <CoffeeCard
-                key={coffee.name}
-                name={coffee.name}
-                description={coffee.description}
-                tags={coffee.tags}
-                value={coffee.value}
-                image={coffee.image}
-              />
-            ))
+                <CoffeeCard key={coffee.name} coffee={coffee} />
+              ))
             : coffeesData.map((coffee: CoffeeType) => (
-              <CoffeeCard
-                key={coffee.name}
-                name={coffee.name}
-                description={coffee.description}
-                tags={coffee.tags}
-                value={coffee.value}
-                image={coffee.image}
-              />
-            ))}
+                <CoffeeCard key={coffee.name} coffee={coffee} />
+              ))}
         </CoffeesWrapeer>
       </CoffeesContainer>
     </HomeContainer>

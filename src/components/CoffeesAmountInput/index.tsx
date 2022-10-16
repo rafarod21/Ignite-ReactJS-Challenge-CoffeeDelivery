@@ -1,27 +1,28 @@
-import { useState } from "react";
-import { Minus, Plus } from "phosphor-react";
+import { useState } from 'react';
+import { Minus, Plus } from 'phosphor-react';
 
-import { CoffeesAmountInputContainer } from "./styles";
+import { CoffeesAmountInputContainer } from './styles';
 
 const MAX_COFFEES = 50;
 
-export function CoffeesAmountInput() {
-  const [coffeesAmount, setCoffeesAmount] = useState(0);
+interface CoffeesAmountInputProps {
+  amount: number;
+  incrementAmountCoffees: () => void;
+  decrementAmountCoffees: () => void;
+}
 
-  function incrementCoffeesAmount() {
-    if (coffeesAmount < MAX_COFFEES) setCoffeesAmount((state) => state + 1);
-  }
-
-  function decrementCoffeesAmount() {
-    if (coffeesAmount > 0) setCoffeesAmount((state) => state - 1);
-  }
+export function CoffeesAmountInput({
+  amount,
+  incrementAmountCoffees,
+  decrementAmountCoffees,
+}: CoffeesAmountInputProps) {
   return (
     <CoffeesAmountInputContainer>
-      <button onClick={decrementCoffeesAmount}>
+      <button onClick={decrementAmountCoffees}>
         <Minus />
       </button>
-      <span>{coffeesAmount}</span>
-      <button onClick={incrementCoffeesAmount}>
+      <span>{amount}</span>
+      <button onClick={incrementAmountCoffees}>
         <Plus />
       </button>
     </CoffeesAmountInputContainer>

@@ -1,47 +1,65 @@
-import { ShoppingCart } from "phosphor-react";
+import { useContext, useState } from 'react';
+import { ShoppingCart } from 'phosphor-react';
 
-import { CoffeesAmountInput } from "../CoffeesAmountInput";
+import { CoffeesAmountInput } from '../CoffeesAmountInput';
+import { CoffeeOrderContext } from '../../contexts/CoffeeOrderContext';
+
+import { CoffeeType } from '../../@types/Coffee';
 
 import {
   CoffeeCardContainer,
   TagsContainer,
   CardFooter,
-  ShoppingCartButton
-} from "./styles";
+  ShoppingCartButton,
+} from './styles';
 
 interface CoffeeCardProps {
-  name: string;
-  description: string;
-  tags: ("tradicional" | "especial" | "com leite" | "alcoólico" | "gelado")[];
-  value: string;
-  image: string;
+  coffee: CoffeeType;
 }
 
-export function CoffeeCard({
-  name,
-  description,
-  tags,
-  value,
-  image
-}: CoffeeCardProps) {
+const MAX_COFFEES = 50;
+
+export function CoffeeCard({ coffee }: CoffeeCardProps) {
+  const { coffees, addCoffee } = useContext(CoffeeOrderContext);
+  const [amountCoffee, setAmountCoffee] = useState(0);
+
+  function handleIncrementAmountCoffees() {
+    if (amountCoffee < MAX_COFFEES) setAmountCoffee((state) => state + 1);
+  }
+
+  function handleDecrementAmountCoffees() {
+    if (amountCoffee > 0) setAmountCoffee((state) => state - 1);
+  }
+
+  function handleAddCoffeeToShoppingCart() {
+    if (amountCoffee > 0) {
+      addCoffee(coffee, amountCoffee);
+      setAmountCoffee(0);
+    }
+  }
+
   return (
     <CoffeeCardContainer>
-      <img src={image} alt="Expresso Tradicional" />
+      <img src={coffee.image} alt='Expresso Tradicional' />
       <TagsContainer>
-        {tags.map((tag) => (
+        {coffee.tags.map((tag) => (
           <span key={tag}>{tag}</span>
         ))}
       </TagsContainer>
-      <h4>{name}</h4>
-      <span>{description}</span>
+      <h4>{coffee.name}</h4>
+      <span>{coffee.description}</span>
       <CardFooter>
         <span>
-          R$ <strong>{value}</strong>
+          R$ <strong>{coffee.value}</strong>
         </span>
         <div>
-          <CoffeesAmountInput />
-          <ShoppingCartButton>
-            <ShoppingCart weight="fill" />
+          <CoffeesAmountInput
+            amount={amountCoffee}
+            incrementAmountCoffees={handleIncrementAmountCoffees}
+            decrementAmountCoffees={handleDecrementAmountCoffees}
+          />
+          <ShoppingCartButton onClick={handleAddCoffeeToShoppingCart}>
+            <ShoppingCart weight='fill' />
           </ShoppingCartButton>
         </div>
       </CardFooter>

@@ -25,11 +25,12 @@ export function decrementOneCoffeeAction(coffee: CoffeeType) {
   };
 }
 
-export function addCoffeeAction(coffee: CoffeeType) {
+export function addCoffeeAction(coffee: CoffeeType, amount: number) {
   return {
     type: ActionTypes.ADD_COFFEE,
     payload: {
       coffee,
+      amount,
     },
   };
 }
