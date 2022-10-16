@@ -1,3 +1,4 @@
+import { useContext, useState } from 'react';
 import {
   Bank,
   CreditCard,
@@ -6,14 +7,19 @@ import {
   Money,
   QrCode,
 } from 'phosphor-react';
-import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as zod from 'zod';
 
 import { CoffeeOrderContext } from '../../contexts/CoffeeOrderContext';
 
 import { CoffeeCardCheckout } from '../../components/CoffeeCardCheckout';
 
 import { Payments } from '../../@types/Payments';
+import { UF_STATES, viaCepProps } from '../../@types/ViaCep';
+
+import { viaCep } from '../../services/apiViaCep';
 
 import { formatValueInCurrentCoin } from '../../utils/formatValueInCurrentCoin';
 
@@ -32,6 +38,18 @@ import {
 
 const DELIVERY_FEE = 3.5;
 
+const addressFormValidationSchema = zod.object({
+  cep: zod.string().length(8, 'Informe um CEP válido'),
+  street: zod.string().min(3, 'Informe um logradouro válido'),
+  number: zod.number().min(1, 'Informe um número. Coloque 0 caso não tenha.'),
+  complement: zod.string(),
+  district: zod.string().min(3, 'Informe um logradouro válido'),
+  city: zod.string().min(2, 'Informe uma cidade válida.'),
+  uf: zod.enum(UF_STATES),
+});
+
+type AddressFormData = zod.infer<typeof addressFormValidationSchema>;
+
 export function Checkout() {
   const navigate = useNavigate();
   const {
@@ -44,18 +62,40 @@ export function Checkout() {
   } = useContext(CoffeeOrderContext);
   const [paymentSelected, setPaymentSelected] = useState<Payments>(payment);
 
+  const addressForm = useForm<AddressFormData>({
+    resolver: zodResolver(addressFormValidationSchema),
+  });
+
+  const { handleSubmit, watch, reset, setValue, register } = addressForm;
+  const valueCepInput = watch('cep');
+
   function handleChangePayment(payment: Payments) {
     setPaymentSelected(payment);
     changePayment(payment);
   }
 
-  function handleSubmitForm(event: any) {
+  function handleOrderFinish(data: AddressFormData) {
     navigate('/success');
+  }
+
+  async function handleGetDataCep() {
+    if (valueCepInput.length === 8) {
+      const { data }: viaCepProps = await viaCep.get(`/${valueCepInput}/json`);
+
+      if ('erro' in data) {
+        return;
+      }
+
+      setValue('street', data.logradouro);
+      setValue('district', data.bairro);
+      setValue('city', data.localidade);
+      setValue('uf', data.uf);
+    }
   }
 
   return (
     <CheckoutContainer>
-      <form onSubmit={handleSubmitForm}>
+      <form onSubmit={handleSubmit(handleOrderFinish)}>
         <div>
           <h2>Complete seu pedido</h2>
           <Address>
@@ -66,15 +106,24 @@ export function Checkout() {
                 <span>Informe o endereço onde deseja receber seu pedido</span>
               </div>
             </LabelAddress>
-            <input type='text' placeholder='CEP' />
-            <input type='text' placeholder='Rua' />
-            <input type='text' placeholder='Número' />
+            <input
+              type='text'
+              placeholder='CEP'
+              {...register('cep')}
+              onBlur={handleGetDataCep}
+            />
+            <input type='text' placeholder='Rua' {...register('street')} />
+            <input type='number' placeholder='Número' {...register('number')} />
             <div data-after='Opicional'>
-              <input type='text' placeholder='Complemento' />
+              <input
+                type='text'
+                placeholder='Complemento'
+                {...register('complement')}
+              />
             </div>
-            <input type='text' placeholder='Bairro' />
-            <input type='text' placeholder='Cidade' />
-            <input type='text' placeholder='UF' />
+            <input type='text' placeholder='Bairro' {...register('district')} />
+            <input type='text' placeholder='Cidade' {...register('city')} />
+            <input type='text' placeholder='UF' {...register('uf')} />
           </Address>
           <Payment>
             <LabelPayment>
