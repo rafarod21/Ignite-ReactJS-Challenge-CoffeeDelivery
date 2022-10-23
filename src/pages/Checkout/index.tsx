@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { Fragment, useContext, useEffect, useState } from 'react';
 import {
   Bank,
   CreditCard,
@@ -8,7 +8,7 @@ import {
   QrCode,
 } from 'phosphor-react';
 import { useNavigate } from 'react-router-dom';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
 
@@ -18,8 +18,6 @@ import { CoffeeCardCheckout } from '../../components/CoffeeCardCheckout';
 
 import { Payments } from '../../@types/Payments';
 import { UF_STATES, viaCepProps } from '../../@types/ViaCep';
-
-import { viaCep } from '../../services/apiViaCep';
 
 import { formatValueInCurrentCoin } from '../../utils/formatValueInCurrentCoin';
 
@@ -35,15 +33,22 @@ import {
   SectionValues,
   SelctedCoffees,
 } from './styles';
+import { getCepDataFromApiViaCEP } from '../../utils/getDataCep';
 
 const DELIVERY_FEE = 3.5;
+const PATTERN_CEP = /^[1-9]\d*$/;
+
+const cepValidationSchema = zod
+  .string()
+  .length(8, 'Informe um CEP válido')
+  .regex(PATTERN_CEP, 'Informe um CEP válido');
 
 const addressFormValidationSchema = zod.object({
-  cep: zod.string().length(8, 'Informe um CEP válido'),
+  cep: cepValidationSchema,
   street: zod.string().min(3, 'Informe um logradouro válido'),
-  number: zod.number().min(1, 'Informe um número. Coloque 0 caso não tenha.'),
+  number: zod.string().min(1, 'Informe um número. Coloque 0 caso não tenha.'),
   complement: zod.string(),
-  district: zod.string().min(3, 'Informe um logradouro válido'),
+  district: zod.string().min(3, 'Informe um bairro válido'),
   city: zod.string().min(2, 'Informe uma cidade válida.'),
   uf: zod.enum(UF_STATES),
 });
@@ -52,21 +57,16 @@ type AddressFormData = zod.infer<typeof addressFormValidationSchema>;
 
 export function Checkout() {
   const navigate = useNavigate();
-  const {
-    coffees,
-    totalMoney,
-    address,
-    changeAddress,
-    payment,
-    changePayment,
-  } = useContext(CoffeeOrderContext);
+  const { coffees, totalMoney, changeAddress, payment, changePayment } =
+    useContext(CoffeeOrderContext);
   const [paymentSelected, setPaymentSelected] = useState<Payments>(payment);
 
   const addressForm = useForm<AddressFormData>({
     resolver: zodResolver(addressFormValidationSchema),
   });
 
-  const { handleSubmit, watch, reset, setValue, register } = addressForm;
+  const { handleSubmit, watch, reset, setValue, register, formState } =
+    addressForm;
   const valueCepInput = watch('cep');
 
   function handleChangePayment(payment: Payments) {
@@ -74,24 +74,76 @@ export function Checkout() {
     changePayment(payment);
   }
 
-  function handleOrderFinish(data: AddressFormData) {
+  async function handleOrderFinish(addressFormData: AddressFormData) {
+    const returnViaCep = await getCepDataFromApiViaCEP(addressFormData.cep);
+
+    if (!returnViaCep) {
+      alert(`O CEP ${addressFormData.cep} não existe!`);
+      return;
+    }
+    changeAddress({
+      cep: addressFormData.cep,
+      street: addressFormData.street,
+      number: Number(addressFormData.number),
+      complement: addressFormData.complement,
+      district: addressFormData.district,
+      city: addressFormData.city,
+      uf: addressFormData.uf,
+    });
+    // console.log(addressFormData);
+
+    reset();
     navigate('/success');
   }
 
-  async function handleGetDataCep() {
-    if (valueCepInput.length === 8) {
-      const { data }: viaCepProps = await viaCep.get(`/${valueCepInput}/json`);
+  async function handleGetCepData() {
+    if (cepValidationSchema.parse(valueCepInput)) {
+      const returnViaCep = await getCepDataFromApiViaCEP(valueCepInput);
 
-      if ('erro' in data) {
+      if (!returnViaCep) {
+        alert(`O CEP ${valueCepInput} não existe!`);
+        return;
+      } else {
+        if (!formState.isSubmitting) {
+          setValue('street', returnViaCep.logradouro);
+          setValue('district', returnViaCep.bairro);
+          setValue('city', returnViaCep.localidade);
+          setValue('uf', returnViaCep.uf);
+        }
+      }
+    }
+
+    return;
+  }
+
+  useEffect(() => {
+    if (!formState.isValid && formState.isSubmitting) {
+      if (formState.errors.cep) {
+        alert(formState.errors.cep.message);
         return;
       }
-
-      setValue('street', data.logradouro);
-      setValue('district', data.bairro);
-      setValue('city', data.localidade);
-      setValue('uf', data.uf);
+      if (formState.errors.street) {
+        alert(formState.errors.street.message);
+        return;
+      }
+      if (formState.errors.number) {
+        alert(formState.errors.number.message);
+        return;
+      }
+      if (formState.errors.district) {
+        alert(formState.errors.district.message);
+        return;
+      }
+      if (formState.errors.city) {
+        alert(formState.errors.city.message);
+        return;
+      }
+      if (formState.errors.uf) {
+        alert(formState.errors.uf.message);
+        return;
+      }
     }
-  }
+  }, [formState]);
 
   return (
     <CheckoutContainer>
@@ -107,23 +159,52 @@ export function Checkout() {
               </div>
             </LabelAddress>
             <input
-              type='text'
               placeholder='CEP'
+              type='text'
+              inputMode='numeric'
+              maxLength={8}
+              minLength={8}
+              // defaultValue={address.cep}
               {...register('cep')}
-              onBlur={handleGetDataCep}
+              onBlur={handleGetCepData}
             />
-            <input type='text' placeholder='Rua' {...register('street')} />
-            <input type='number' placeholder='Número' {...register('number')} />
+            <input
+              type='text'
+              placeholder='Rua'
+              // defaultValue={address.street}
+              {...register('street')}
+            />
+            <input
+              type='text'
+              placeholder='Número'
+              // defaultValue={address.number}
+              {...register('number')}
+            />
             <div data-after='Opicional'>
               <input
                 type='text'
                 placeholder='Complemento'
+                // defaultValue={address.complement}
                 {...register('complement')}
               />
             </div>
-            <input type='text' placeholder='Bairro' {...register('district')} />
-            <input type='text' placeholder='Cidade' {...register('city')} />
-            <input type='text' placeholder='UF' {...register('uf')} />
+            <input
+              type='text'
+              placeholder='Bairro'
+              // defaultValue={address.district}
+              {...register('district')}
+            />
+            <input
+              type='text'
+              placeholder='Cidade'
+              // defaultValue={address.city}
+              {...register('city')}
+            />
+            <select {...register('uf')}>
+              {UF_STATES.map((uf) => (
+                <option key={uf}>{uf}</option>
+              ))}
+            </select>
           </Address>
           <Payment>
             <LabelPayment>
@@ -183,10 +264,10 @@ export function Checkout() {
               <>
                 <ListCoffees>
                   {coffees.map((coffee) => (
-                    <>
-                      <CoffeeCardCheckout key={coffee.name} coffee={coffee} />
+                    <Fragment key={coffee.name}>
+                      <CoffeeCardCheckout coffee={coffee} />
                       <hr />
-                    </>
+                    </Fragment>
                   ))}
                 </ListCoffees>
                 <SectionValues>

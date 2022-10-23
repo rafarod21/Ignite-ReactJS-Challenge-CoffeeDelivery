@@ -7,6 +7,12 @@ export const SuccessContainer = styled.div`
   justify-content: center;
   gap: 10rem;
 
+  @media (max-width: 1250px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 5rem;
+  }
+
   > img {
     width: 40rem;
   }

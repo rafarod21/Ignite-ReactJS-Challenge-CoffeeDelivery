@@ -1,4 +1,7 @@
+import { useContext, useEffect } from 'react';
 import { CurrencyDollar, MapPin, Timer } from 'phosphor-react';
+
+import { CoffeeOrderContext } from '../../contexts/CoffeeOrderContext';
 
 import illustrationImg from '../../assets/Illustration.svg';
 
@@ -11,6 +14,15 @@ import {
 } from './styles';
 
 export function Success() {
+  const { coffees, address, payment, removeCoffee } =
+    useContext(CoffeeOrderContext);
+
+  useEffect(() => {
+    coffees.forEach((coffee) => {
+      removeCoffee(coffee);
+    });
+  }, []);
+
   return (
     <SuccessContainer>
       <div>
@@ -23,9 +35,12 @@ export function Success() {
                 <MapPin weight='fill' />
               </div>{' '}
               <span>
-                Entrega em <strong>Rua João Daniel Martinelli, 102</strong>{' '}
+                Entrega em{' '}
+                <strong>{`${address.street}, ${address.number}${
+                  address.complement.length > 0 && `, ${address.complement}`
+                }`}</strong>{' '}
                 <br />
-                Farrapos - Porto Alegre, RS
+                {`${address.district} - ${address.city}, ${address.uf}`}
               </span>
             </Item1>
             <Item2>
@@ -43,7 +58,10 @@ export function Success() {
               </div>{' '}
               <span>
                 Pagamento na entrega <br />
-                <strong>Cartão de Crédito</strong>
+                {payment === 'credit' && <strong>Cartão de Crédito</strong>}
+                {payment === 'debit' && <strong>Cartão de Débito</strong>}
+                {payment === 'money' && <strong>Dinheiro</strong>}
+                {payment === 'pix' && <strong>PIX</strong>}
               </span>
             </Item3>
           </InformationsBlock>

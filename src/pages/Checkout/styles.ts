@@ -4,6 +4,8 @@ export const CheckoutContainer = styled.div`
   display: flex;
   flex-direction: column;
 
+  padding-bottom: 2rem;
+
   form {
     padding: 0 10rem;
     display: grid;
@@ -53,7 +55,7 @@ export const Address = styled.section`
   padding: 2.5rem;
 
   display: grid;
-  grid-template-columns: auto auto 3.75rem;
+  grid-template-columns: auto auto 4.75rem;
   grid-template-areas:
     'label label label'
     'cep . .'
@@ -146,8 +148,27 @@ export const Address = styled.section`
     grid-area: city;
   }
 
-  input:nth-child(8) {
+  /* input:nth-child(8) {
     grid-area: uf;
+  } */
+
+  select {
+    grid-area: uf;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid ${(props) => props.theme.button};
+    background: ${(props) => props.theme.input};
+    color: ${(props) => props.theme.text};
+
+    font-size: 0.875rem;
+
+    &::placeholder {
+      color: ${(props) => props.theme.label};
+    }
+
+    &:focus {
+      border: 1px solid ${(props) => props.theme['yellow-300']};
+    }
   }
 `;
 
@@ -218,7 +239,7 @@ export const ButtonOptionsPayments = styled.button<{ isSelected?: boolean }>`
 
 export const SelctedCoffees = styled.section`
   width: 100%;
-  height: 500px;
+  min-height: 31.25rem;
   border-radius: 6px 44px;
   background: ${(props) => props.theme.card};
   padding: 2.5rem;
